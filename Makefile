@@ -5,13 +5,13 @@ WP_NAME			= wordpress
 MDB_NAME		= mariadb
 
 LIST_VOLUMES	= $(shell docker volume ls -q)
-HOME_PATH		= $(shell echo $$HOME/.docker)
+HOME_PATH		= $(shell echo $$HOME)
 SYSTEM_USER		= $(shell echo $$USER)
 
 all: setup up
 
 up:
-	sudo docker compose --file ./srcs/docker-compose.yml --project-name=$(NAME) up --build
+	sudo docker compose --verbose --file ./srcs/docker-compose.yml --project-name=$(NAME) up --build
 
 down:
 	sudo docker-compose --file=./srcs/docker-compose.yml --project-name=$(NAME) down
@@ -36,11 +36,12 @@ install:
 
 upgrade: 
 	sudo apt -y install curl
-	mkdir -p ${HOME_PATH}/cli-plugins
-	curl -SL https://github.com/docker/compose/releases/download/v2.2.3/docker-compose-linux-x86_64 -o ${HOME_PATH}/cli-plugins/docker-compose
-	chmod +x ${HOME_PATH}/cli-plugins/docker-compose
+	mkdir -p ${HOME_PATH}/.docker/cli-plugins
+	curl -SL https://github.com/docker/compose/releases/download/v2.2.3/docker-compose-linux-x86_64 -o ${HOME_PATH}/.docker/cli-plugins/docker-compose
+	chmod +x ${HOME_PATH}/.docker/cli-plugins/docker-compose
 	sudo mkdir -p /usr/local/lib/docker/cli-plugins
 	sudo mv /home/${SYSTEM_USER}/.docker/cli-plugins/docker-compose /usr/local/lib/docker/cli-plugins/docker-compose
+
 
 folders:
 	sudo mkdir -p $(HOME_PATH)/data/$(MDB_NAME)
@@ -48,7 +49,7 @@ folders:
 
 clean:
 	docker volume rm $(LIST_VOLUMES)
-	sudo rm -rf $(HOME_PATH)
+	sudo rm -rf $(HOME_PATH)/data
 
 fclean: down clean
 	docker system prune -all --force --volumes
