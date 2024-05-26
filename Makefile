@@ -151,19 +151,29 @@ USER_MAIL=ekaik-ne@student.42sp.org.br" > ./srcs/.env; \
 
 database:
 	@if ! docker ps --filter "name=$(MDB_NAME)" --format '{{.Names}}' | grep -q $(MDB_NAME); then \
-		echo "O contêiner $(MDB_NAME) não está em execução. Por favor, inicie o projeto Docker para acessar o banco de dados."; \
-		exit 1; \
-	fi
-	@echo "Conectando ao Banco: "
-	docker exec -it mariadb mysql -u $(MDB_USER) --password=$(MDB_PASS) --database=$(MDB_DATABASE)
+		echo "${YELLOW}-----The container $(MDB_NAME) is not running. Please start the Docker project to access the database.-----${RESET}"; \
+	else \
+		echo "${YELLOW}-----Connecting to Database:-----${RESET}"; \
+		docker exec -it $(MDB_NAME) mysql -u $(MDB_USER) --password=$(MDB_PASS) --database=$(MDB_DATABASE); \
+	fi	
 
-clean: down
-	docker volume rm $(LIST_VOLUMES)
-	sudo rm -rf /home/$(USER)/data
-	sudo rm ./srcs/.env
+clean:
+	@if docker volume ls -q | grep -q .; then \
+		echo "${YELLOW}-----Stopping Docker project '$(NAME)' and removing volumes-----${RESET}"; \
+		$(MAKE) down; \
+		docker volume rm $(LIST_VOLUMES); \
+		echo "${YELLOW}-----Removing local data and .env file-----${RESET}"; \
+		sudo rm -rf /home/$(USER)/data; \
+		sudo rm ./srcs/.env; \
+		echo "${GREEN}-----Cleanup completed successfully-----${RESET}"; \
+	else \
+		echo "${YELLOW}-----No Docker volumes found. Nothing to clean.-----${RESET}"; \
+	fi
 
 fclean: clean
+	@echo "${YELLOW}-----Performing full Docker system prune-----${RESET}"
 	docker system prune --all --force --volumes
+	@echo "${GREEN}-----Full cleanup completed successfully-----${RESET}"
 
 re: fclean all
 
