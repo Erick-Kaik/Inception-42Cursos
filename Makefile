@@ -136,7 +136,7 @@ MDB_PASS=pass_db\n\
 \n\
 URL=ekaik-ne.42.fr\n\
 \n\
-PATH_VOLUME=/home/$(USER)data\n\
+PATH_VOLUME=/home/$(USER)/data\n\
 \n\
 ADM_USER=Norminette \n\
 ADM_PASS=N0rm1n3tt3L0v3M4rv1n\n\
