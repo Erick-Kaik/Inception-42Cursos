@@ -14,7 +14,6 @@ MDB_NAME		= mariadb
 
 LIST_VOLUMES	= $(shell docker volume ls -q)
 HOME_PATH		= $(shell echo $$HOME)
-SYSTEM_USER		= $(shell echo $$USER)
 
 RED				= \033[0;31m
 GREEN			= \033[0;32m
@@ -111,23 +110,23 @@ upgrade:
 
 
 folders:
-	@if [ -d "$(HOME_PATH)/data/$(MDB_NAME)" ]; then \
+	@if [ -d "/home/$(USER)/data/$(MDB_NAME)" ]; then \
 		echo "${GREEN}-----Data folder $(MDB_NAME) already exists. No action needed.-----${RESET}"; \
 	else \
 		echo "${YELLOW}-----Creating data folder $(MDB_NAME)-----${RESET}"; \
-		sudo mkdir -p $(HOME_PATH)/data/$(MDB_NAME); \
+		sudo mkdir -p /home/$(USER)/data/$(MDB_NAME); \
 		echo "${GREEN}-----Data folder $(MDB_NAME) created successfully-----${RESET}"; \
 	fi
-	@if [ -d "$(HOME_PATH)/data/$(WP_NAME)" ]; then \
+	@if [ -d "/home/$(USER)/data/$(WP_NAME)" ]; then \
 		echo "${GREEN}-----Data folder $(WP_NAME) already exists. No action needed.-----${RESET}"; \
 	else \
 		echo "${YELLOW}-----Creating data folder $(WP_NAME)-----${RESET}"; \
-		sudo mkdir -p $(HOME_PATH)/data/$(WP_NAME); \
+		sudo mkdir -p /home/$(USER)/data/$(WP_NAME); \
 		echo "${GREEN}-----Data folder $(WP_NAME) created successfully-----${RESET}"; \
 	fi
 
 env:
-	@if [ -f "./srcs/.env" ] && [ "$$(cat ./srcs/.env)" = "MDB_DATABASE=db_inception \nMDB_USER=user_db\nMDB_PASS=pass_db\n\nURL=ekaik-ne.42.fr\n\nPATH_VOLUME=$(HOME_PATH)/data\n\nADM_USER=Norminette \nADM_PASS=N0rm1n3tt3L0v3M4rv1n\nADM_MAIL=norminette@admin.42sp.org.br\n\nUSER_NAME=ekaik-ne\nUSER_PASS=CutiaCururu\nUSER_MAIL=ekaik-ne@student.42sp.org.br" ]; then \
+	@if [ -f "./srcs/.env" ] && [ "$$(cat ./srcs/.env)" = "MDB_DATABASE=db_inception \nMDB_USER=user_db\nMDB_PASS=pass_db\n\nURL=ekaik-ne.42.fr\n\nPATH_VOLUME=/home/$(USER)/data\n\nADM_USER=Norminette \nADM_PASS=N0rm1n3tt3L0v3M4rv1n\nADM_MAIL=norminette@admin.42sp.org.br\n\nUSER_NAME=ekaik-ne\nUSER_PASS=CutiaCururu\nUSER_MAIL=ekaik-ne@student.42sp.org.br" ]; then \
 		echo "${GREEN}-----The .env file content is already up to date. No action needed.-----${RESET}"; \
 	else \
 		echo "${YELLOW}-----Updating .env file-----${RESET}"; \
@@ -137,7 +136,7 @@ MDB_PASS=pass_db\n\
 \n\
 URL=ekaik-ne.42.fr\n\
 \n\
-PATH_VOLUME=$(HOME_PATH)/data\n\
+PATH_VOLUME=/home/$(USER)data\n\
 \n\
 ADM_USER=Norminette \n\
 ADM_PASS=N0rm1n3tt3L0v3M4rv1n\n\
@@ -160,7 +159,7 @@ database:
 
 clean: down
 	docker volume rm $(LIST_VOLUMES)
-	sudo rm -rf $(HOME_PATH)/data
+	sudo rm -rf /home/$(USER)/data
 	sudo rm ./srcs/.env
 
 fclean: clean
@@ -169,3 +168,4 @@ fclean: clean
 re: fclean all
 
 .PHONY: all up down setup system install upgrade fclean clean re
+''
